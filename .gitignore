@@ -39,3 +39,6 @@
 
 claude.md
 /.claude_plan/*
+
+# Ignore Kamal secrets
+/.kamal/secrets
