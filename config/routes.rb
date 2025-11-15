@@ -1,6 +1,12 @@
 Rails.application.routes.draw do
+  # Authentication
   resource :session
   resources :passwords, param: :token
+
+  # Registration
+  resource :registration, only: [:new, :create]
+
+  # Home
   get "home/index"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

@@ -38,7 +38,8 @@
 !/app/assets/builds/.keep
 
 claude.md
-/.claude_plan/*
+/.claude_plan/features.md
+/.claude_plan/user_authentication_and_profile.md
 
 # Ignore Kamal secrets
 /.kamal/secrets
