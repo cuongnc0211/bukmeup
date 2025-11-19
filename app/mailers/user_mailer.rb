@@ -5,4 +5,14 @@ class UserMailer < ApplicationMailer
 
     mail(to: @user.email_address, subject: "Please confirm your Bukmeup account")
   end
+
+  def welcome_email
+    @user = params[:user]
+    @login_url = new_session_url # or any URL you want
+
+    mail(
+      to: @user.email_address,
+      subject: "Welcome to Bukmeup.com!"
+    )
+  end
 end
