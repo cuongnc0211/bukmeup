@@ -15,6 +15,7 @@ class User < ApplicationRecord
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
   # Callbacks
+  before_validation :normalize_timezone
   before_create :generate_confirmation_token
   after_create :send_confirmation_email
 
@@ -48,6 +49,44 @@ class User < ApplicationRecord
   end
 
   private
+
+  def normalize_timezone
+    return if time_zone.blank?
+
+    # Check if it's already a valid ActiveSupport timezone name
+    if ActiveSupport::TimeZone.all.map(&:name).include?(time_zone)
+      # Already valid, do nothing
+      return
+    end
+
+    # Try to find a matching ActiveSupport timezone by IANA identifier
+    # This handles browser-detected timezones like "Asia/Ho_Chi_Minh"
+    matched_zone = ActiveSupport::TimeZone.all.find do |zone|
+      zone.tzinfo.name == time_zone || zone.tzinfo.identifier == time_zone
+    end
+
+    if matched_zone
+      self.time_zone = matched_zone.name
+      return
+    end
+
+    # If not found by identifier, try matching by UTC offset
+    # This handles cases like "Asia/Ho_Chi_Minh" which should map to "Bangkok" or "Hanoi"
+    begin
+      tz_info = TZInfo::Timezone.get(time_zone)
+      target_offset = tz_info.current_period.offset.utc_total_offset
+
+      matched_zone = ActiveSupport::TimeZone.all.find do |zone|
+        zone.tzinfo.current_period.offset.utc_total_offset == target_offset
+      end
+
+      if matched_zone
+        self.time_zone = matched_zone.name
+      end
+    rescue TZInfo::InvalidTimezoneIdentifier
+      # Invalid timezone, validation will catch this
+    end
+  end
 
   def generate_confirmation_token
     self.email_confirmation_token = SecureRandom.urlsafe_base64(32)
