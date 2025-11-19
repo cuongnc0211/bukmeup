@@ -24,7 +24,40 @@
   </head>
 
   <body>
-    <main class="container mx-auto mt-28 px-5 flex">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <div class="flex items-center">
+            <%= link_to "Bukmeup", root_path, class: "text-xl font-bold text-blue-600" %>
+          </div>
+
+          <div class="flex items-center space-x-4">
+            <% if authenticated? %>
+              <span class="text-gray-700">Hello, <%= Current.user.email_address %></span>
+              <%= button_to "Log out", session_path, method: :delete, class: "text-gray-600 hover:text-gray-900" %>
+            <% else %>
+              <%= link_to "Log in", new_session_path, class: "text-gray-600 hover:text-gray-900" %>
+              <%= link_to "Sign up", new_registration_path, class: "bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <% if flash.any? %>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        <% flash.each do |name, msg| %>
+          <div class="<%= name == 'notice' ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700' %> px-4 py-3 rounded mb-4 border">
+            <%= msg %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <!-- Main Content -->
+    <main class="container mx-auto mt-8 px-5">
       <%= yield %>
     </main>
   </body>
