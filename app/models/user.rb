@@ -96,11 +96,11 @@ class User < ApplicationRecord
     return unless avatar.attached?
 
     unless avatar.content_type.in?(%w[image/jpeg image/png image/gif])
-      errors.add(:avatar, 'must be a JPEG, PNG, or GIF')
+      errors.add(:avatar, "must be a JPEG, PNG, or GIF")
     end
 
     if avatar.byte_size > 5.megabytes
-      errors.add(:avatar, 'size must be less than 5MB')
+      errors.add(:avatar, "size must be less than 5MB")
     end
   end
 end

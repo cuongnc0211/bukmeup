@@ -4,16 +4,16 @@ Rails.application.routes.draw do
   resources :passwords, param: :token
 
   # Registration
-  resource :registration, only: [:new, :create]
+  resource :registration, only: [ :new, :create ]
 
   # Email Confirmation
-  get '/confirm_email/:token', to: 'email_confirmations#show', as: :confirm_email
-  post '/resend_confirmation', to: 'email_confirmations#resend', as: :resend_confirmation
+  get "/confirm_email/:token", to: "email_confirmations#show", as: :confirm_email
+  post "/resend_confirmation", to: "email_confirmations#resend", as: :resend_confirmation
 
   # Dashboard namespace (requires authentication)
   namespace :dashboard do
-    resource :profile, only: [:edit, :update]
-    resource :business, only: [:new, :create, :show, :edit, :update]
+    resource :profile, only: [ :edit, :update ]
+    resource :business, only: [ :new, :create, :show, :edit, :update ]
   end
 
   # Home
@@ -23,7 +23,7 @@ Rails.application.routes.draw do
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   # get "up" => "/health#show", as: :rails_health_check
-  get '/healthcheck', to: proc { [200, {}, ['OK']] }
+  get "/healthcheck", to: proc { [ 200, {}, [ "OK" ] ] }
 
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)

@@ -1,8 +1,8 @@
 module Dashboard
   class BusinessesController < BaseController
-    before_action :set_business, only: [:show, :edit, :update]
-    before_action :redirect_if_has_business, only: [:new, :create]
-    before_action :redirect_if_no_business, only: [:show, :edit, :update]
+    before_action :set_business, only: [ :show, :edit, :update ]
+    before_action :redirect_if_has_business, only: [ :new, :create ]
+    before_action :redirect_if_no_business, only: [ :show, :edit, :update ]
 
     def new
       @business = Business.new
