@@ -184,6 +184,15 @@ GEM
       logger
     mini_mime (1.1.5)
     minitest (5.26.1)
+    monetize (1.13.0)
+      money (~> 6.12)
+    money (6.19.0)
+      i18n (>= 0.6.4, <= 2)
+    money-rails (1.15.0)
+      activesupport (>= 3.0)
+      monetize (~> 1.9)
+      money (~> 6.13)
+      railties (>= 3.0)
     msgpack (1.8.0)
     multi_xml (0.7.2)
       bigdecimal (~> 3.1)
@@ -436,6 +445,7 @@ DEPENDENCIES
   importmap-rails
   kamal
   letter_opener
+  money-rails (~> 1.15)
   pg (~> 1.1)
   propshaft
   puma (>= 5.0)

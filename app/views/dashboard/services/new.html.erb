@@ -1,0 +1,9 @@
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <h1 class="text-3xl font-bold mb-6">Add New Service</h1>
+
+  <%= render "form", service: @service %>
+
+  <div class="mt-4">
+    <%= link_to "Back to Services", dashboard_services_path, class: "text-gray-600 hover:text-gray-900" %>
+  </div>
+</div>

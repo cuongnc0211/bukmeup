@@ -1,5 +1,6 @@
 class Business < ApplicationRecord
   belongs_to :user
+  has_many :services, dependent: :destroy
   has_one_attached :logo
 
   enum :business_type, {

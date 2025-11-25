@@ -14,6 +14,12 @@ Rails.application.routes.draw do
   namespace :dashboard do
     resource :profile, only: [ :edit, :update ]
     resource :business, only: [ :new, :create, :show, :edit, :update ]
+    resources :services do
+      member do
+        post :move_up
+        post :move_down
+      end
+    end
   end
 
   # Home
