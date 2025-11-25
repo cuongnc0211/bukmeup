@@ -8,7 +8,15 @@
 
       <div class="flex items-center space-x-4">
         <% if authenticated? %>
-          <span class="text-gray-700 hidden sm:inline">Hello, <%= Current.user.email_address %></span>
+          <% if Current.user.avatar.attached? %>
+            <%= image_tag Current.user.avatar, class: "h-10 w-10 rounded-full object-cover" %>
+          <% else %>
+            <div class="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center">
+              <span class="text-white font-semibold text-sm">
+                <%= Current.user.email_address.first.upcase %>
+              </span>
+            </div>
+          <% end %>
           <%= link_to "Settings", edit_dashboard_profile_path, class: "text-gray-600 hover:text-gray-900" %>
           <%= button_to "Log out", session_path, method: :delete, class: "text-gray-600 hover:text-gray-900" %>
         <% else %>
