@@ -17,11 +17,6 @@ module Dashboard
       max_position = current_user.business.services.maximum(:position) || 0
       @service.position = max_position + 1
 
-      # Convert price from VND to cents (multiply by 100)
-      if params[:service][:price].present?
-        @service.price_cents = (params[:service][:price].to_f * 100).to_i
-      end
-
       if @service.save
         redirect_to dashboard_services_path, notice: "Service created successfully."
       else

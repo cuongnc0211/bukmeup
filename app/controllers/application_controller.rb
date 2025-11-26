@@ -9,6 +9,12 @@ class ApplicationController < ActionController::Base
   # Set timezone for all requests
   around_action :set_time_zone, if: :authenticated?
 
+  # Helper to get current user (returns nil if not authenticated)
+  def current_user
+    Current.user
+  end
+  helper_method :current_user
+
   private
 
   def set_time_zone(&block)

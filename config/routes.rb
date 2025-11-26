@@ -12,6 +12,8 @@ Rails.application.routes.draw do
 
   # Dashboard namespace (requires authentication)
   namespace :dashboard do
+    root "businesses#show"
+
     resource :profile, only: [ :edit, :update ]
     resource :business, only: [ :new, :create, :show, :edit, :update ]
     resources :services do

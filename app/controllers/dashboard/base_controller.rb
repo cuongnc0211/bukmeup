@@ -8,12 +8,6 @@ module Dashboard
     # Require business setup before accessing other dashboard pages
     before_action :require_business_setup
 
-    # Helper to get current user
-    def current_user
-      Current.user
-    end
-    helper_method :current_user
-
     private
 
     def require_business_setup
