@@ -94,10 +94,10 @@ RSpec.describe "Dashboard::Services", type: :request do
         expect(Service.last.business).to eq(business)
       end
 
-      it "converts price to cents" do
+      it "stores price correctly" do
         post dashboard_services_path, params: valid_params
-        # 80,000 VND * 100 = 8,000,000 cents
-        expect(Service.last.price_cents).to eq(8000000)
+        # monetize gem handles VND currency automatically - no manual x100 needed
+        expect(Service.last.price_cents).to eq(80000)
       end
 
       it "sets position to next available number" do
@@ -180,7 +180,7 @@ RSpec.describe "Dashboard::Services", type: :request do
         service.reload
         expect(service.name).to eq("Updated Service Name")
         expect(service.duration_minutes).to eq(60)
-        expect(service.price_cents).to eq(12000000) # 120,000 * 100
+        expect(service.price_cents).to eq(120000) # monetize gem handles VND automatically
       end
 
       it "redirects to services index with success message" do

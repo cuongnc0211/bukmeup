@@ -28,12 +28,7 @@ module Dashboard
     end
 
     def update
-      # Convert price from VND to cents (multiply by 100)
-      if params[:service][:price].present?
-        @service.price_cents = (params[:service][:price].to_f * 100).to_i
-      end
-
-      if @service.update(service_params_without_price)
+      if @service.update(service_params)
         redirect_to dashboard_services_path, notice: "Service updated successfully."
       else
         render :edit, status: :unprocessable_entity
@@ -88,11 +83,7 @@ module Dashboard
     end
 
     def service_params
-      params.require(:service).permit(:name, :description, :duration_minutes, :active)
-    end
-
-    def service_params_without_price
-      params.require(:service).permit(:name, :description, :duration_minutes, :active)
+      params.require(:service).permit(:name, :description, :duration_minutes, :price, :active)
     end
   end
 end
