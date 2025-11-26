@@ -84,6 +84,112 @@
     <%= form.telephone_field :phone, class: "form-input", placeholder: "+84 123 456 789" %>
   </div>
 
+  <!-- Operating Hours Section -->
+  <div class="space-y-4" data-controller="operating-hours">
+    <h3 class="text-lg font-semibold text-slate-900">Operating Hours</h3>
+    <p class="text-sm text-slate-500">Set your business hours and break times for each day</p>
+
+    <% Business::WEEKDAYS.each do |day| %>
+      <% day_hours = business.operating_hours&.dig(day) || {} %>
+      <% is_closed = day_hours["closed"] || false %>
+      <% breaks = day_hours["breaks"] || [] %>
+
+      <div class="border border-slate-200 rounded-lg p-4 space-y-3">
+        <!-- Day Header with Open/Close Times -->
+        <div class="flex items-center gap-4">
+          <label class="w-28 text-sm font-medium text-slate-700 capitalize"><%= day %></label>
+
+          <%= form.time_field "operating_hours[#{day}][open]",
+                value: day_hours["open"],
+                class: "form-input w-32",
+                disabled: is_closed,
+                data: { operating_hours_target: "#{day}Open" } %>
+
+          <span class="text-slate-500">to</span>
+
+          <%= form.time_field "operating_hours[#{day}][close]",
+                value: day_hours["close"],
+                class: "form-input w-32",
+                disabled: is_closed,
+                data: { operating_hours_target: "#{day}Close" } %>
+
+          <%= form.check_box "operating_hours[#{day}][closed]",
+                checked: is_closed,
+                class: "ml-4 h-4 w-4 rounded border-slate-300",
+                data: {
+                  operating_hours_target: "#{day}Closed",
+                  action: "change->operating-hours#toggleDay",
+                  day: day
+                } %>
+
+          <%= form.label "operating_hours[#{day}][closed]", "Closed", class: "ml-2 text-sm text-slate-600" %>
+        </div>
+
+        <!-- Break Times -->
+        <div class="ml-32 space-y-2" data-operating-hours-target="<%= day %>Breaks">
+          <label class="text-xs font-medium text-slate-600 uppercase">Break Times</label>
+
+          <div class="space-y-2">
+            <% breaks.each_with_index do |break_period, index| %>
+              <div class="flex items-center gap-2" data-operating-hours-target="breakRow">
+                <%= form.time_field "operating_hours[#{day}][breaks][][start]",
+                      value: break_period["start"],
+                      class: "form-input w-28 text-sm",
+                      placeholder: "Start",
+                      disabled: is_closed %>
+
+                <span class="text-slate-400 text-sm">to</span>
+
+                <%= form.time_field "operating_hours[#{day}][breaks][][end]",
+                      value: break_period["end"],
+                      class: "form-input w-28 text-sm",
+                      placeholder: "End",
+                      disabled: is_closed %>
+
+                <button type="button"
+                        class="text-red-600 hover:text-red-700 text-sm"
+                        data-action="click->operating-hours#removeBreak">
+                  Remove
+                </button>
+              </div>
+            <% end %>
+          </div>
+
+          <button type="button"
+                  class="text-sm text-primary-600 hover:text-primary-700"
+                  data-action="click->operating-hours#addBreak"
+                  data-day="<%= day %>"
+                  <%= 'disabled' if is_closed %>>
+            + Add Break Time
+          </button>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Break Template (hidden, used by Stimulus) -->
+    <template data-operating-hours-target="breakTemplate">
+      <div class="flex items-center gap-2" data-operating-hours-target="breakRow">
+        <input type="time"
+               name="business[operating_hours][DAY_PLACEHOLDER][breaks][][start]"
+               class="form-input w-28 text-sm"
+               placeholder="Start">
+
+        <span class="text-slate-400 text-sm">to</span>
+
+        <input type="time"
+               name="business[operating_hours][DAY_PLACEHOLDER][breaks][][end]"
+               class="form-input w-28 text-sm"
+               placeholder="End">
+
+        <button type="button"
+                class="text-red-600 hover:text-red-700 text-sm"
+                data-action="click->operating-hours#removeBreak">
+          Remove
+        </button>
+      </div>
+    </template>
+  </div>
+
   <!-- Submit Button -->
   <div class="flex justify-end pt-4 border-t border-slate-100">
     <%= form.submit business.persisted? ? "Save Changes" : "Create Business", class: "btn-primary cursor-pointer" %>

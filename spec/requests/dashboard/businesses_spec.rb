@@ -215,4 +215,162 @@ RSpec.describe "Dashboard::Businesses", type: :request do
       expect(Business.last.slug).to eq("my-shop")
     end
   end
+
+  describe "operating hours updates" do
+    before { sign_in(user) }
+
+    let!(:business) { create(:business, user: user) }
+
+    describe "updating with valid operating hours" do
+      it "updates operating hours successfully" do
+        operating_hours_params = {
+          monday: { open: "10:00", close: "18:00", closed: false, breaks: [] },
+          tuesday: { open: "10:00", close: "18:00", closed: false, breaks: [] },
+          wednesday: { open: "10:00", close: "18:00", closed: false, breaks: [] },
+          thursday: { open: "10:00", close: "18:00", closed: false, breaks: [] },
+          friday: { open: "10:00", close: "18:00", closed: false, breaks: [] },
+          saturday: { open: "10:00", close: "16:00", closed: false, breaks: [] },
+          sunday: { open: nil, close: nil, closed: true, breaks: [] }
+        }
+
+        patch dashboard_business_path, params: {
+          business: { operating_hours: operating_hours_params }
+        }
+
+        expect(response).to redirect_to(dashboard_business_path)
+        expect(business.reload.operating_hours["monday"]["open"]).to eq("10:00")
+        expect(business.reload.operating_hours["monday"]["close"]).to eq("18:00")
+      end
+
+      it "updates with break times successfully" do
+        operating_hours_params = {
+          monday: {
+            open: "09:00",
+            close: "19:00",
+            closed: false,
+            breaks: [
+              { start: "12:00", end: "13:00" },
+              { start: "17:00", end: "17:30" }
+            ]
+          },
+          tuesday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          wednesday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          thursday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          friday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          saturday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          sunday: { open: nil, close: nil, closed: true, breaks: [] }
+        }
+
+        patch dashboard_business_path, params: {
+          business: { operating_hours: operating_hours_params }
+        }
+
+        expect(response).to redirect_to(dashboard_business_path)
+
+        monday_hours = business.reload.operating_hours["monday"]
+        expect(monday_hours["breaks"].size).to eq(2)
+        expect(monday_hours["breaks"][0]["start"]).to eq("12:00")
+        expect(monday_hours["breaks"][0]["end"]).to eq("13:00")
+        expect(monday_hours["breaks"][1]["start"]).to eq("17:00")
+        expect(monday_hours["breaks"][1]["end"]).to eq("17:30")
+      end
+
+      it "preserves times when marking day as closed" do
+        operating_hours_params = {
+          monday: { open: "09:00", close: "17:00", closed: true, breaks: [] },
+          tuesday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          wednesday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          thursday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          friday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          saturday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          sunday: { open: nil, close: nil, closed: true, breaks: [] }
+        }
+
+        patch dashboard_business_path, params: {
+          business: { operating_hours: operating_hours_params }
+        }
+
+        expect(response).to redirect_to(dashboard_business_path)
+
+        monday = business.reload.operating_hours["monday"]
+        expect(monday["closed"]).to be true
+        expect(monday["open"]).to eq("09:00")
+        expect(monday["close"]).to eq("17:00")
+      end
+    end
+
+    describe "updating with invalid operating hours" do
+      it "rejects when close time is before open time" do
+        operating_hours_params = {
+          monday: { open: "17:00", close: "09:00", closed: false, breaks: [] },
+          tuesday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          wednesday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          thursday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          friday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          saturday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          sunday: { open: nil, close: nil, closed: true, breaks: [] }
+        }
+
+        patch dashboard_business_path, params: {
+          business: { operating_hours: operating_hours_params }
+        }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include("closing time must be after opening time")
+      end
+
+      it "rejects breaks outside operating hours" do
+        operating_hours_params = {
+          monday: {
+            open: "09:00",
+            close: "17:00",
+            closed: false,
+            breaks: [
+              { start: "08:00", end: "09:00" }
+            ]
+          },
+          tuesday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          wednesday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          thursday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          friday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          saturday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          sunday: { open: nil, close: nil, closed: true, breaks: [] }
+        }
+
+        patch dashboard_business_path, params: {
+          business: { operating_hours: operating_hours_params }
+        }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include("break must be within operating hours")
+      end
+
+      it "rejects overlapping breaks" do
+        operating_hours_params = {
+          monday: {
+            open: "09:00",
+            close: "17:00",
+            closed: false,
+            breaks: [
+              { start: "12:00", end: "13:30" },
+              { start: "13:00", end: "14:00" }
+            ]
+          },
+          tuesday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          wednesday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          thursday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          friday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          saturday: { open: "09:00", close: "17:00", closed: false, breaks: [] },
+          sunday: { open: nil, close: nil, closed: true, breaks: [] }
+        }
+
+        patch dashboard_business_path, params: {
+          business: { operating_hours: operating_hours_params }
+        }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include("overlapping break times")
+      end
+    end
+  end
 end
