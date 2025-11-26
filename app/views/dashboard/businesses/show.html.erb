@@ -18,59 +18,59 @@
   </div>
 
   <!-- Booking URL -->
-  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
-    <p class="text-sm font-medium text-blue-900 mb-1">Your Booking URL</p>
+  <div class="bg-primary-50 border border-primary-200 rounded-xl p-6 mb-8">
+    <p class="text-sm font-medium text-primary-900 mb-2">Your Booking URL</p>
     <div class="flex items-center space-x-2">
-      <code class="bg-white px-3 py-2 rounded border text-blue-700 flex-1"><%= @business.booking_url %></code>
-      <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm" onclick="navigator.clipboard.writeText('<%= @business.booking_url %>')">
+      <code class="bg-white px-4 py-3 rounded-lg border border-primary-100 text-primary-700 flex-1 font-mono text-sm"><%= @business.booking_url %></code>
+      <button class="btn-primary py-2 px-4 text-sm" onclick="navigator.clipboard.writeText('<%= @business.booking_url %>')">
         Copy
       </button>
     </div>
-    <p class="mt-2 text-sm text-blue-700">Share this link with your customers to let them book appointments.</p>
+    <p class="mt-2 text-sm text-primary-700">Share this link with your customers to let them book appointments.</p>
   </div>
 
   <!-- Business Details -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <!-- Description -->
-    <div class="bg-white border rounded-lg p-6">
+    <div class="card p-6">
       <h3 class="text-lg font-semibold mb-2">Description</h3>
       <% if @business.description.present? %>
-        <p class="text-gray-600"><%= @business.description %></p>
+        <p class="text-slate-600"><%= @business.description %></p>
       <% else %>
-        <p class="text-gray-400 italic">No description added yet.</p>
+        <p class="text-slate-400 italic">No description added yet.</p>
       <% end %>
     </div>
 
     <!-- Contact Info -->
-    <div class="bg-white border rounded-lg p-6">
+    <div class="card p-6">
       <h3 class="text-lg font-semibold mb-2">Contact Information</h3>
       <dl class="space-y-2">
         <% if @business.address.present? %>
           <div>
-            <dt class="text-sm text-gray-500">Address</dt>
-            <dd class="text-gray-900"><%= @business.address %></dd>
+            <dt class="text-sm text-slate-500">Address</dt>
+            <dd class="text-slate-900"><%= @business.address %></dd>
           </div>
         <% end %>
         <% if @business.phone.present? %>
           <div>
-            <dt class="text-sm text-gray-500">Phone</dt>
-            <dd class="text-gray-900"><%= @business.phone %></dd>
+            <dt class="text-sm text-slate-500">Phone</dt>
+            <dd class="text-slate-900"><%= @business.phone %></dd>
           </div>
         <% end %>
         <% if @business.address.blank? && @business.phone.blank? %>
-          <p class="text-gray-400 italic">No contact info added yet.</p>
+          <p class="text-slate-400 italic">No contact info added yet.</p>
         <% end %>
       </dl>
     </div>
   </div>
 
   <!-- Quick Stats Placeholder -->
-  <div class="mt-8 bg-gray-50 border rounded-lg p-6">
+  <div class="mt-8 card p-6 bg-slate-50 border-slate-200">
     <h3 class="text-lg font-semibold mb-4">Dashboard</h3>
-    <p class="text-gray-500">Your booking dashboard will appear here once you add services and start accepting bookings.</p>
+    <p class="text-slate-500">Your booking dashboard will appear here once you add services and start accepting bookings.</p>
     <div class="mt-4">
-      <span class="inline-block bg-gray-200 text-gray-600 px-3 py-1 rounded-full text-sm">Coming Soon: Services</span>
-      <span class="inline-block bg-gray-200 text-gray-600 px-3 py-1 rounded-full text-sm ml-2">Coming Soon: Operating Hours</span>
+      <span class="inline-block bg-slate-200 text-slate-600 px-3 py-1 rounded-full text-sm">Coming Soon: Services</span>
+      <span class="inline-block bg-slate-200 text-slate-600 px-3 py-1 rounded-full text-sm ml-2">Coming Soon: Operating Hours</span>
     </div>
   </div>
 </div>
