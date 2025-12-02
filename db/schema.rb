@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_27_045310) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_30_121139) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -50,6 +50,16 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_27_045310) do
     t.index ["booking_id", "service_id"], name: "index_booking_services_on_booking_id_and_service_id", unique: true
     t.index ["booking_id"], name: "index_booking_services_on_booking_id"
     t.index ["service_id"], name: "index_booking_services_on_service_id"
+  end
+
+  create_table "booking_slots", force: :cascade do |t|
+    t.bigint "booking_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "slot_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["booking_id", "slot_id"], name: "index_booking_slots_on_booking_and_slot", unique: true
+    t.index ["booking_id"], name: "index_booking_slots_on_booking_id"
+    t.index ["slot_id"], name: "index_booking_slots_on_slot_id"
   end
 
   create_table "bookings", force: :cascade do |t|
@@ -116,6 +126,21 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_27_045310) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "slots", force: :cascade do |t|
+    t.bigint "business_id", null: false
+    t.integer "capacity", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.date "date", null: false
+    t.datetime "end_time", null: false
+    t.integer "original_capacity", default: 0, null: false
+    t.datetime "start_time", null: false
+    t.datetime "updated_at", null: false
+    t.index ["business_id", "date"], name: "index_slots_on_business_and_date"
+    t.index ["business_id", "start_time"], name: "index_slots_on_business_and_start_time", unique: true
+    t.index ["business_id"], name: "index_slots_on_business_id"
+    t.index ["date"], name: "index_slots_on_date"
+  end
+
   create_table "users", force: :cascade do |t|
     t.text "bio"
     t.datetime "created_at", null: false
@@ -138,8 +163,11 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_27_045310) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "booking_services", "bookings"
   add_foreign_key "booking_services", "services"
+  add_foreign_key "booking_slots", "bookings"
+  add_foreign_key "booking_slots", "slots"
   add_foreign_key "bookings", "businesses"
   add_foreign_key "businesses", "users"
   add_foreign_key "services", "businesses"
   add_foreign_key "sessions", "users"
+  add_foreign_key "slots", "businesses"
 end

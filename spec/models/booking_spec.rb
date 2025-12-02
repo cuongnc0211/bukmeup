@@ -147,7 +147,7 @@ RSpec.describe Booking, type: :model do
 
     describe ".for_date" do
       it "returns bookings scheduled on the given date" do
-        today_booking = create(:booking, business: business, scheduled_at: Time.zone.now.beginning_of_day + 10.hours)
+        today_booking = create(:booking, business: business, scheduled_at: 2.hours.from_now)
         tomorrow_booking = create(:booking, business: business, scheduled_at: 1.day.from_now.beginning_of_day + 10.hours)
 
         expect(Booking.for_date(Date.today)).to include(today_booking)
